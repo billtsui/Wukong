@@ -1,63 +1,54 @@
-﻿using System.Text;
+﻿using GoldenCudgel.Chain;
+using GoldenCudgel.Entities;
+using GoldenCudgel.Utils;
 
-namespace NCMDecrypter;
+namespace GoldenCudgel;
 
 public class Program
 {
     public static void Main(string[] args)
     {
-        FileHandling fileHandling = new FileHandling();
-        var fileNameList = fileHandling.ReadFileList(Directory.GetCurrentDirectory());
-        if (fileNameList.Count == 0)
+        var fileInfoList = FileUtils.ReadFileList(Directory.GetCurrentDirectory());
+        if (fileInfoList.Count == 0)
         {
             Console.WriteLine("No file found.");
             return;
         }
 
-        Console.WriteLine($"Found {fileNameList.Count} songs.");
+        Console.WriteLine($"Found {fileInfoList.Count} songs.");
 
-        foreach (var filePath in fileNameList)
+        var headerHandler = new HeaderHandler();
+        var jumpHandler = new JumpHandler();
+        var rc4LengthHandler = new Rc4LengthHandler();
+        var rc4ContentHandler = new Rc4ContentHandler();
+        var metaLengthHandler = new MetaLengthHandler();
+        var metaContentHandler = new MetaContentHandler();
+        var checkHandler = new CheckHandler();
+        var jump2Handler = new Jump2Handler();
+        var albumImageLengthHandler = new AlbumImageLengthHandler();
+        var albumImageHandler = new AlbumImageHandler();
+
+        headerHandler.SetNext(jumpHandler)
+                     .SetNext(rc4LengthHandler)
+                     .SetNext(rc4ContentHandler)
+                     .SetNext(metaLengthHandler)
+                     .SetNext(metaContentHandler)
+                     .SetNext(checkHandler)
+                     .SetNext(jump2Handler)
+                     .SetNext(albumImageLengthHandler)
+                     .SetNext(albumImageHandler);
+
+        foreach (var fileInfo in fileInfoList)
         {
-            //读取 8 bytes的 magic header
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            var ncmObject = new NcmObject
             {
-                /*
-                 * 读取 magic head
-                 */
-                var magicHead = fileHandling.ReadMagicHead(fs);
-                string head = Encoding.UTF8.GetString(magicHead);
-                if (head != FileHandling.MAGIC_HEAD)
-                {
-                    Console.WriteLine($"File {filePath} is not a valid netease cloud music file.");
-                    continue;
-                }
-
-                //跳过 2 bytes 
-                fs.Seek(2, SeekOrigin.Current);
-
-                /*
-                 * 读取 4 bytes 的 key length，并且按照小端法转整型
-                 * C# 在 Windows 平台上是小端法，所以不需要转
-                 */
-                var keyLength = fileHandling.ReadKeyLength(fs);
-
-                /*
-                 * 读取 keyLength 长度的密钥
-                 */
-                var KeyContent = fileHandling.ReadKeyContent(fs, keyLength);
-
-                /*
-                 * 读取 meta 长度
-                 */
-                var metaLength = fileHandling.ReadMetaLength(fs);
-
-                /*
-                 * 读取 meta 内容
-                 */
-
-                var metaInfo = fileHandling.ReadMetaContent(fs, metaLength);
-                Console.WriteLine(metaInfo);
-            }
+                FileName = fileInfo.Name
+            };
+            
+            using var fs = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read);
+            headerHandler.Handle(fs, ncmObject);
+            
+            Console.WriteLine(ncmObject.ToString());
         }
 
 
