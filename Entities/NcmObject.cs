@@ -24,6 +24,10 @@ public class NcmObject
     private int _albumImageLength;
 
     private byte[] _albumImageContentArray;
+    private List<byte> _musicDataArray;
+    
+    private NeteaseCopyrightData _neteaseCopyrightData;
+
 
     public string FileName
     {
@@ -88,8 +92,10 @@ public class NcmObject
     public override string ToString()
     {
         return
-            $"File name: {FileName},RC4 key length :{Rc4KeyLength} bytes" +
-            $",Meta length :{MetaLength} bytes, Album image length :{AlbumImageLength} bytes";
+            $"Name:{FileName}, " +
+            $"RC4 key length:{Rc4KeyLength} bytes, " +
+            $"Meta length:{MetaLength} bytes, " +
+            $"Album image length:{AlbumImageLength} bytes";
     }
 
     public byte[] CrcArray
@@ -114,5 +120,17 @@ public class NcmObject
     {
         get => _albumImageContentArray;
         set => _albumImageContentArray = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    public List<byte> MusicDataArray
+    {
+        get => _musicDataArray;
+        set => _musicDataArray = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    public NeteaseCopyrightData NeteaseCopyrightData
+    {
+        get => _neteaseCopyrightData;
+        set => _neteaseCopyrightData = value ?? throw new ArgumentNullException(nameof(value));
     }
 }

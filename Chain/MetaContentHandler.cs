@@ -1,6 +1,8 @@
+using System.Net.Mime;
 using System.Text;
 using GoldenCudgel.Entities;
 using GoldenCudgel.Utils;
+using Newtonsoft.Json;
 
 namespace GoldenCudgel.Chain;
 
@@ -32,6 +34,7 @@ public class MetaContentHandler : AbstractHandler
         //去除 music: 字符
         ncmObject.MetaData = metaContentStr.Replace("music:", "");
         ncmObject.MetaDataArray = aesDecryptArray;
+        ncmObject.NeteaseCopyrightData = JsonConvert.DeserializeObject<NeteaseCopyrightData>(ncmObject.MetaData) ?? throw new InvalidOperationException();
 
 
         base.Handle(fs, ncmObject);
