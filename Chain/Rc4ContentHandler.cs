@@ -8,7 +8,7 @@ public class Rc4ContentHandler : AbstractHandler
     private static readonly byte[] CoreKey =
         { 0x68, 0x7A, 0x48, 0x52, 0x41, 0x6D, 0x73, 0x6F, 0x35, 0x6B, 0x49, 0x6E, 0x62, 0x61, 0x78, 0x57 };
 
-    public override void Handle(FileStream fs, NcmObject ncmObject)
+    public override void Handle(FileInfo file, FileStream fs, NcmObject ncmObject)
     {
         if (ncmObject.Rc4KeyLength > 0)
         {
@@ -16,10 +16,7 @@ public class Rc4ContentHandler : AbstractHandler
 
             var readResult = fs.Read(rc4EncryptContent, 0, ncmObject.Rc4KeyLength);
 
-            for (var i = 0; i < rc4EncryptContent.Length; i++)
-            {
-                rc4EncryptContent[i] ^= 0x64;
-            }
+            for (var i = 0; i < rc4EncryptContent.Length; i++) rc4EncryptContent[i] ^= 0x64;
 
             var aesDecrypt = AESUtil.Decrypt(rc4EncryptContent, CoreKey);
 
@@ -29,6 +26,6 @@ public class Rc4ContentHandler : AbstractHandler
             ncmObject.Rc4KeyContentArray = key;
         }
 
-        base.Handle(fs, ncmObject);
+        base.Handle(file, fs, ncmObject);
     }
 }

@@ -2,15 +2,12 @@ namespace GoldenCudgel.Utils;
 
 public class RC4
 {
-    private byte[] _box = new byte[256];
+    private readonly byte[] _box = new byte[256];
 
     public void KSA(byte[] key)
     {
         var len = key.Length;
-        for (var i = 0; i < 256; i++)
-        {
-            _box[i] = (byte)i;
-        }
+        for (var i = 0; i < 256; i++) _box[i] = (byte)i;
 
         for (int i = 0, j = 0; i < 256; i++)
         {

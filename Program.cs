@@ -1,8 +1,9 @@
-﻿using GoldenCudgel.Chain;
+﻿using System.Runtime.CompilerServices;
+using GoldenCudgel.Chain;
 using GoldenCudgel.Entities;
 using GoldenCudgel.Utils;
 using TagLib;
-using Picture = TagLib.Flac.Picture;
+using File = TagLib.File;
 
 namespace GoldenCudgel;
 
@@ -18,8 +19,29 @@ public class Program
             return;
         }
 
-        Console.WriteLine($"Found {fileInfoList.Count} songs.");
+        Console.ForegroundColor = ConsoleColor.Green;
+        Console.WriteLine($"Find {fileInfoList.Count} songs.");
 
+        var headerHandler = AssembleChain();
+
+        foreach (var fileInfo in fileInfoList)
+        {
+            var ncmObject = new NcmObject
+            {
+                FileName = fileInfo.Name
+            };
+
+            using var fs = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read);
+            headerHandler.Handle(fileInfo, fs, ncmObject);
+            fs.Close();
+            Console.WriteLine(ncmObject.ToString());
+        }
+
+        Console.WriteLine("Done!");
+    }
+
+    private static HeaderHandler AssembleChain()
+    {
         var headerHandler = new HeaderHandler();
         var jumpHandler = new JumpHandler();
         var rc4LengthHandler = new Rc4LengthHandler();
@@ -31,6 +53,7 @@ public class Program
         var albumImageLengthHandler = new AlbumImageLengthHandler();
         var albumImageHandler = new AlbumImageHandler();
         var musicDataHandler = new MusicDataHandler();
+        var fileCreateHandler = new FileCreateHandler();
 
         headerHandler.SetNext(jumpHandler)
             .SetNext(rc4LengthHandler)
@@ -41,38 +64,9 @@ public class Program
             .SetNext(jump2Handler)
             .SetNext(albumImageLengthHandler)
             .SetNext(albumImageHandler)
-            .SetNext(musicDataHandler);
+            .SetNext(musicDataHandler)
+            .SetNext(fileCreateHandler);
 
-        foreach (var fileInfo in fileInfoList)
-        {
-            var ncmObject = new NcmObject
-            {
-                FileName = fileInfo.Name
-            };
-
-            using var fs = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read);
-            headerHandler.Handle(fs, ncmObject);
-            fs.Close();
-
-            Console.WriteLine(ncmObject.ToString());
-
-            string destFileName = string.Format("{0}.{1}", fileInfo.Name.Substring(0, fileInfo.Name.Length - 4),
-                ncmObject.NeteaseCopyrightData.Format);
-
-            using var stream = new FileStream(destFileName, FileMode.Create, FileAccess.Write);
-            stream.Write(ncmObject.MusicDataArray.ToArray());
-            stream.Close();
-
-            var file = TagLib.File.Create(destFileName);
-            var tag_pic = new TagLib.Picture(new ByteVector(ncmObject.AlbumImageContentArray));
-            file.Tag.Pictures = [tag_pic];
-            
-            file.Tag.Comment = ncmObject.NeteaseCopyrightData.Album;
-            file.Tag.Title = ncmObject.NeteaseCopyrightData.MusicName;
-            file.Tag.Album = ncmObject.NeteaseCopyrightData.Album;
-            file.Save();
-        }
-
-        Console.WriteLine("Done!");
+        return headerHandler;
     }
 }

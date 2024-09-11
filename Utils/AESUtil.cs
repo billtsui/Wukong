@@ -10,9 +10,9 @@ public class AESUtil
         aesAlgorithm.Key = key;
         aesAlgorithm.Padding = PaddingMode.PKCS7;
         aesAlgorithm.Mode = CipherMode.ECB;
-        
+
         var cryptoTransform = aesAlgorithm.CreateDecryptor();
-        
+
         var transformFinalBlock = cryptoTransform.TransformFinalBlock(dataToDecrypt, 0, dataToDecrypt.Length);
         cryptoTransform.Dispose();
         return transformFinalBlock;

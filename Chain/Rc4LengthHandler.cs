@@ -4,13 +4,13 @@ namespace GoldenCudgel.Chain;
 
 public class Rc4LengthHandler : AbstractHandler
 {
-    public override void Handle(FileStream fs, NcmObject ncmObject)
+    public override void Handle(FileInfo file, FileStream fs, NcmObject ncmObject)
     {
-        byte[] keyLengthArray = new byte[4];
+        var keyLengthArray = new byte[4];
         var readResult = fs.Read(keyLengthArray, 0, keyLengthArray.Length);
         ncmObject.Rc4KeyLengthArray = keyLengthArray;
         ncmObject.Rc4KeyLength = BitConverter.ToInt32(keyLengthArray);
-        
-        base.Handle(fs, ncmObject);
+
+        base.Handle(file, fs, ncmObject);
     }
 }

@@ -12,8 +12,8 @@ public abstract class AbstractHandler : IHandler
         return handler;
     }
 
-    public virtual void Handle(FileStream fs, NcmObject ncmObject)
+    public virtual void Handle(FileInfo file, FileStream fs, NcmObject ncmObject)
     {
-        _nextHandler?.Handle(fs, ncmObject);
+        _nextHandler?.Handle(file, fs, ncmObject);
     }
 }

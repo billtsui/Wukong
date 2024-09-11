@@ -2,31 +2,27 @@ namespace GoldenCudgel.Entities;
 
 public class NcmObject
 {
-    private string _fileName;
+    private byte[] _albumImageContentArray;
 
-    private byte[] _headerArray;
+    private byte[] _albumImageLengthArray;
+
+    private byte[] _crcArray;
+    private string _fileName;
     private string _header;
 
-    private byte[] _rc4KeyLengthArray;
-    private int _rc4KeyLength;
+    private byte[] _headerArray;
+    private string _metaData;
+
+    private byte[] _metaDataArray;
+
+    private byte[] _metaLengthArray;
+    private List<byte> _musicDataArray;
+
+    private NeteaseCopyrightData _neteaseCopyrightData;
 
     private byte[] _rc4KeyContentArray;
 
-    private byte[] _metaLengthArray;
-    private int _metaLength;
-
-    private byte[] _metaDataArray;
-    private string _metaData;
-
-    private byte[] _crcArray;
-
-    private byte[] _albumImageLengthArray;
-    private int _albumImageLength;
-
-    private byte[] _albumImageContentArray;
-    private List<byte> _musicDataArray;
-    
-    private NeteaseCopyrightData _neteaseCopyrightData;
+    private byte[] _rc4KeyLengthArray;
 
 
     public string FileName
@@ -53,11 +49,7 @@ public class NcmObject
         set => _rc4KeyLengthArray = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    public int Rc4KeyLength
-    {
-        get => _rc4KeyLength;
-        set => _rc4KeyLength = value;
-    }
+    public int Rc4KeyLength { get; set; }
 
     public byte[] Rc4KeyContentArray
     {
@@ -71,11 +63,7 @@ public class NcmObject
         set => _metaLengthArray = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    public int MetaLength
-    {
-        get => _metaLength;
-        set => _metaLength = value;
-    }
+    public int MetaLength { get; set; }
 
     public byte[] MetaDataArray
     {
@@ -87,15 +75,6 @@ public class NcmObject
     {
         get => _metaData;
         set => _metaData = value ?? throw new ArgumentNullException(nameof(value));
-    }
-
-    public override string ToString()
-    {
-        return
-            $"Name:{FileName}, " +
-            $"RC4 key length:{Rc4KeyLength} bytes, " +
-            $"Meta length:{MetaLength} bytes, " +
-            $"Album image length:{AlbumImageLength} bytes";
     }
 
     public byte[] CrcArray
@@ -110,11 +89,7 @@ public class NcmObject
         set => _albumImageLengthArray = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    public int AlbumImageLength
-    {
-        get => _albumImageLength;
-        set => _albumImageLength = value;
-    }
+    public int AlbumImageLength { get; set; }
 
     public byte[] AlbumImageContentArray
     {
@@ -132,5 +107,14 @@ public class NcmObject
     {
         get => _neteaseCopyrightData;
         set => _neteaseCopyrightData = value ?? throw new ArgumentNullException(nameof(value));
+    }
+
+    public override string ToString()
+    {
+        return
+            $"Name:{FileName}, " +
+            $"Meta length:{MetaLength} bytes, " +
+            $"Album image length:{AlbumImageLength/1024} kb, " +
+            $"Music data length:{MusicDataArray.Count / 1024 / 1024} MB";
     }
 }
