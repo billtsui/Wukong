@@ -1,10 +1,12 @@
+using System.Reflection;
+
 namespace GoldenCudgel.Utils;
 
 public class FileUtils
 {
-    public static List<FileInfo> ReadFileList(string directoryPath)
+    public static List<FileInfo> ReadFileList()
     {
-        var currentDir = Directory.GetCurrentDirectory();
+        var currentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         var directoryInfo = new DirectoryInfo(currentDir);
         if (!directoryInfo.Exists) return [];
 

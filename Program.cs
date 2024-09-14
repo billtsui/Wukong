@@ -1,9 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using GoldenCudgel.Chain;
+﻿using GoldenCudgel.Chain;
 using GoldenCudgel.Entities;
 using GoldenCudgel.Utils;
-using TagLib;
-using File = TagLib.File;
 
 namespace GoldenCudgel;
 
@@ -12,10 +9,10 @@ public class Program
     [Obsolete("Obsolete")]
     public static void Main(string[] args)
     {
-        var fileInfoList = FileUtils.ReadFileList(Directory.GetCurrentDirectory());
+        var fileInfoList = FileUtils.ReadFileList();
         if (fileInfoList.Count == 0)
         {
-            Console.WriteLine("No file found.");
+            Console.WriteLine("No such file found.");
             return;
         }
 
@@ -56,16 +53,16 @@ public class Program
         var fileCreateHandler = new FileCreateHandler();
 
         headerHandler.SetNext(jumpHandler)
-            .SetNext(rc4LengthHandler)
-            .SetNext(rc4ContentHandler)
-            .SetNext(metaLengthHandler)
-            .SetNext(metaContentHandler)
-            .SetNext(checkHandler)
-            .SetNext(jump2Handler)
-            .SetNext(albumImageLengthHandler)
-            .SetNext(albumImageHandler)
-            .SetNext(musicDataHandler)
-            .SetNext(fileCreateHandler);
+                     .SetNext(rc4LengthHandler)
+                     .SetNext(rc4ContentHandler)
+                     .SetNext(metaLengthHandler)
+                     .SetNext(metaContentHandler)
+                     .SetNext(checkHandler)
+                     .SetNext(jump2Handler)
+                     .SetNext(albumImageLengthHandler)
+                     .SetNext(albumImageHandler)
+                     .SetNext(musicDataHandler)
+                     .SetNext(fileCreateHandler);
 
         return headerHandler;
     }

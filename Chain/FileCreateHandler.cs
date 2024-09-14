@@ -1,3 +1,4 @@
+using System.Reflection;
 using GoldenCudgel.Entities;
 using TagLib;
 using File = TagLib.File;
@@ -8,21 +9,36 @@ public class FileCreateHandler : AbstractHandler
 {
     public override void Handle(FileInfo file, FileStream fs, NcmObject ncmObject)
     {
-        var destFileName = $"{file.Name[..^4]}.{ncmObject.NeteaseCopyrightData.Format}";
+        var currentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        if (OperatingSystem.IsMacOS()) currentDir += "/";
+        if (OperatingSystem.IsWindows()) currentDir += "\\";
 
-        using var stream = new FileStream(destFileName, FileMode.Create, FileAccess.Write);
+        var destPath = $"{currentDir + file.Name[..^4]}.{ncmObject.NeteaseCopyrightData.Format}";
+
+        using var stream = new FileStream(destPath, FileMode.Create, FileAccess.Write);
         stream.Write(ncmObject.MusicDataArray.ToArray());
         stream.Close();
 
-        var musicFile = File.Create(destFileName);
-        var tagPic = new Picture(new ByteVector(ncmObject.AlbumImageContentArray));
-        musicFile.Tag.Pictures = [tagPic];
+        try
+        {
+            var musicFile = File.Create(destPath);
+            var tagPic = new Picture(new ByteVector(ncmObject.AlbumImageContentArray));
+            musicFile.Tag.Pictures = [tagPic];
 
-        musicFile.Tag.Comment = ncmObject.NeteaseCopyrightData.Album;
-        musicFile.Tag.Title = ncmObject.NeteaseCopyrightData.MusicName;
-        musicFile.Tag.Album = ncmObject.NeteaseCopyrightData.Album;
-        musicFile.Save();
-        musicFile.Dispose();
+            musicFile.Tag.Comment = ncmObject.NeteaseCopyrightData.Album;
+            musicFile.Tag.Title = ncmObject.NeteaseCopyrightData.MusicName;
+            musicFile.Tag.Album = ncmObject.NeteaseCopyrightData.Album;
+            musicFile.Save();
+            musicFile.Dispose();
+        }
+        catch (Exception e)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(destPath);
+            Console.WriteLine(e);
+            Console.ForegroundColor = ConsoleColor.Green;
+        }
+
         base.Handle(file, fs, ncmObject);
     }
 }

@@ -17,6 +17,12 @@ public class MusicDataHandler : AbstractHandler
             ncmObject.MusicDataArray.AddRange(buffer);
         }
 
+        //兼容file signatures是mp3但后缀是flac的歌曲
+        if (BitConverter.ToString(ncmObject.MusicDataArray.Slice(0, 3).ToArray()).Equals("49-44-33"))
+        {
+            ncmObject.NeteaseCopyrightData.Format = "mp3";
+        }
+
         base.Handle(file, fs, ncmObject);
     }
 }

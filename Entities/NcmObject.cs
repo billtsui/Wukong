@@ -114,7 +114,7 @@ public class NcmObject
         return
             $"Name:{FileName}, " +
             $"Meta length:{MetaLength} bytes, " +
-            $"Album image length:{AlbumImageLength/1024} kb, " +
+            $"Album image length:{AlbumImageLength / 1024} kb, " +
             $"Music data length:{MusicDataArray.Count / 1024 / 1024} MB";
     }
 }

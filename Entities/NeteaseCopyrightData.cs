@@ -5,7 +5,7 @@ namespace GoldenCudgel.Entities;
 [DataContract]
 public class NeteaseCopyrightData
 {
-    [DataMember(Name = "musicId")] public int MusicId { get; set; }
+    [DataMember(Name = "musicId")] public string MusicId { get; set; }
 
     [DataMember(Name = "musicName")] public string MusicName { get; set; }
 
