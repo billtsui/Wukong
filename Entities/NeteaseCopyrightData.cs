@@ -9,7 +9,7 @@ public class NeteaseCopyrightData
 
     [DataMember(Name = "musicName")] public string MusicName { get; set; }
 
-    [DataMember(Name = "artist")] public List<List<object>> Artist { get; set; }
+    [DataMember(Name = "artist")] public string[][] Artist { get; set; }
 
     [DataMember(Name = "albumId")] public int AlbumId { get; set; }
 

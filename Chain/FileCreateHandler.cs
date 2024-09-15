@@ -23,10 +23,9 @@ public class FileCreateHandler : AbstractHandler
             var musicFile = File.Create(destPath);
             var tagPic = new Picture(new ByteVector(ncmObject.AlbumImageContentArray));
             musicFile.Tag.Pictures = [tagPic];
-
-            musicFile.Tag.Comment = ncmObject.NeteaseCopyrightData.Album;
             musicFile.Tag.Title = ncmObject.NeteaseCopyrightData.MusicName;
             musicFile.Tag.Album = ncmObject.NeteaseCopyrightData.Album;
+            musicFile.Tag.Performers = [ncmObject.NeteaseCopyrightData.Artist[0][0]];
             musicFile.Save();
             musicFile.Dispose();
         }
