@@ -1,4 +1,3 @@
-using System.Reflection;
 using GoldenCudgel.Entities;
 using TagLib;
 using File = TagLib.File;
@@ -9,7 +8,7 @@ public class FileCreateHandler : AbstractHandler
 {
     public override void Handle(FileInfo file, FileStream fs, NcmObject ncmObject)
     {
-        var currentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        var currentDir = file.DirectoryName;
         if (OperatingSystem.IsMacOS()) currentDir += "/";
         if (OperatingSystem.IsWindows()) currentDir += "\\";
 

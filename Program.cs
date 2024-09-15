@@ -1,4 +1,5 @@
-﻿using GoldenCudgel.Chain;
+﻿using CommandLine;
+using GoldenCudgel.Chain;
 using GoldenCudgel.Entities;
 using GoldenCudgel.Utils;
 
@@ -6,10 +7,14 @@ namespace GoldenCudgel;
 
 public class Program
 {
-    [Obsolete("Obsolete")]
     public static void Main(string[] args)
     {
-        var fileInfoList = FileUtils.ReadFileList();
+        Parser.Default.ParseArguments<Options>(args).WithParsed(Run);
+    }
+
+    private static void Run(Options options)
+    {
+        var fileInfoList = FileUtils.ReadFileList(options.Path);
         if (fileInfoList.Count == 0)
         {
             Console.WriteLine("No such file found.");
@@ -34,6 +39,7 @@ public class Program
             Console.WriteLine(ncmObject.ToString());
         }
 
+        Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine("Done!");
     }
 
@@ -53,17 +59,23 @@ public class Program
         var fileCreateHandler = new FileCreateHandler();
 
         headerHandler.SetNext(jumpHandler)
-                     .SetNext(rc4LengthHandler)
-                     .SetNext(rc4ContentHandler)
-                     .SetNext(metaLengthHandler)
-                     .SetNext(metaContentHandler)
-                     .SetNext(checkHandler)
-                     .SetNext(jump2Handler)
-                     .SetNext(albumImageLengthHandler)
-                     .SetNext(albumImageHandler)
-                     .SetNext(musicDataHandler)
-                     .SetNext(fileCreateHandler);
+            .SetNext(rc4LengthHandler)
+            .SetNext(rc4ContentHandler)
+            .SetNext(metaLengthHandler)
+            .SetNext(metaContentHandler)
+            .SetNext(checkHandler)
+            .SetNext(jump2Handler)
+            .SetNext(albumImageLengthHandler)
+            .SetNext(albumImageHandler)
+            .SetNext(musicDataHandler)
+            .SetNext(fileCreateHandler);
 
         return headerHandler;
+    }
+
+    private class Options
+    {
+        [Option('p', "path", Required = true, HelpText = "网易云音乐下载目录")]
+        public string Path { get; }
     }
 }
