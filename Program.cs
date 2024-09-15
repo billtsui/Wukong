@@ -76,6 +76,6 @@ public class Program
     private class Options
     {
         [Option('p', "path", Required = true, HelpText = "网易云音乐下载目录")]
-        public string Path { get; }
+        public string Path { get; set; }
     }
 }
