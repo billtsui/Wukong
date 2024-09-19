@@ -1,5 +1,4 @@
 # GoldenCudgel
-***
 GoldenCudgel是一个可以将网易云音乐ncm文件转换成flac/mp3格式的工具。
 
 
