@@ -21,9 +21,54 @@ public class Program
             return;
         }
 
+        //创建单独的写入目录
+        var directoryInfo = fileInfoList[0].Directory?.Parent;
+        if (directoryInfo?.GetDirectories("convert").Length == 0)
+        {
+            directoryInfo?.CreateSubdirectory("convert");
+        }
+
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine($"Find {fileInfoList.Count} songs.");
+        if (fileInfoList.Count > 50)
+        {
+            //最多用4个线程处理
+            int processorCount = Environment.ProcessorCount > 4
+                ? 4
+                : Environment.ProcessorCount;
 
+            Task[] tasks = new Task[processorCount];
+
+            for (var i = 0; i < tasks.Length; i++)
+            {
+                var i1 = i;
+                tasks[i] = new Task(() =>
+                {
+                    int songCount = fileInfoList.Count % processorCount == 0
+                        ? fileInfoList.Count / processorCount
+                        : fileInfoList.Count / processorCount + 1;
+                    ProcessFile(fileInfoList.Skip(i1 * songCount).Take(songCount).ToList());
+                });
+            }
+
+            foreach (var task in tasks)
+            {
+                task.Start();
+            }
+
+            Task.WaitAll(tasks.ToArray());
+        }
+        else
+        {
+            ProcessFile(fileInfoList);
+        }
+
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine("Done!");
+    }
+
+    private static void ProcessFile(List<FileInfo> fileInfoList)
+    {
         var headerHandler = AssembleChain();
 
         foreach (var fileInfo in fileInfoList)
@@ -38,9 +83,6 @@ public class Program
             fs.Close();
             Console.WriteLine(ncmObject.ToString());
         }
-
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("Done!");
     }
 
     private static HeaderHandler AssembleChain()

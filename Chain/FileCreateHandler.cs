@@ -8,9 +8,9 @@ public class FileCreateHandler : AbstractHandler
 {
     public override void Handle(FileInfo file, FileStream fs, NcmObject ncmObject)
     {
-        var currentDir = file.DirectoryName;
-        if (OperatingSystem.IsMacOS()) currentDir += "/";
-        if (OperatingSystem.IsWindows()) currentDir += "\\";
+        var currentDir = file.Directory.Parent.FullName;
+        if (OperatingSystem.IsMacOS()) currentDir += "/convert/";
+        if (OperatingSystem.IsWindows()) currentDir += "\\convert\\";
 
         var destPath = $"{currentDir + file.Name[..^4]}.{ncmObject.NeteaseCopyrightData.Format}";
 
