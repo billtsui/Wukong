@@ -1,5 +1,4 @@
 using GoldenCudgel.Entities;
-using GoldenCudgel.Exceptions;
 
 namespace GoldenCudgel.Chain;
 
@@ -22,10 +21,6 @@ public abstract class AbstractHandler : IHandler
         catch (Exception e)
         {
             Console.ForegroundColor = ConsoleColor.Red;
-            if (e is FileCreateException exception)
-            {
-                Console.WriteLine(exception.filePath);
-            }
             Console.WriteLine(e);
             Console.ForegroundColor = ConsoleColor.Green;
         }

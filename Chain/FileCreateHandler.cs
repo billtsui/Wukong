@@ -1,5 +1,4 @@
 using GoldenCudgel.Entities;
-using GoldenCudgel.Exceptions;
 using TagLib;
 using File = TagLib.File;
 
@@ -29,21 +28,16 @@ public class FileCreateHandler : AbstractHandler
             return;
         }
 
-        try
-        {
-            var musicFile = File.Create(destPath);
-            var tagPic = new Picture(new ByteVector(ncmObject.AlbumImageContentArray));
-            musicFile.Tag.Pictures = [tagPic];
-            musicFile.Tag.Title = ncmObject.NeteaseCopyrightData.MusicName;
-            musicFile.Tag.Album = ncmObject.NeteaseCopyrightData.Album;
-            musicFile.Tag.Performers = [ncmObject.NeteaseCopyrightData.Artist[0][0]];
-            musicFile.Save();
-            musicFile.Dispose();
-        }
-        catch (Exception e)
-        {
-            throw new FileCreateException() { filePath = destPath };
-        }
+
+        var musicFile = File.Create(destPath);
+        var tagPic = new Picture(new ByteVector(ncmObject.AlbumImageContentArray));
+        musicFile.Tag.Pictures = [tagPic];
+        musicFile.Tag.Title = ncmObject.NeteaseCopyrightData.MusicName;
+        musicFile.Tag.Album = ncmObject.NeteaseCopyrightData.Album;
+        musicFile.Tag.Performers = [ncmObject.NeteaseCopyrightData.Artist[0][0]];
+        musicFile.Save();
+        musicFile.Dispose();
+
 
         base.Handle(file, fs, ncmObject);
     }
