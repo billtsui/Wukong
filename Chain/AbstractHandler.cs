@@ -1,4 +1,5 @@
 using GoldenCudgel.Entities;
+using GoldenCudgel.Exceptions;
 
 namespace GoldenCudgel.Chain;
 
@@ -14,6 +15,19 @@ public abstract class AbstractHandler : IHandler
 
     public virtual void Handle(FileInfo file, FileStream fs, NcmObject ncmObject)
     {
-        _nextHandler?.Handle(file, fs, ncmObject);
+        try
+        {
+            _nextHandler?.Handle(file, fs, ncmObject);
+        }
+        catch (Exception e)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            if (e is FileCreateException exception)
+            {
+                Console.WriteLine(exception.filePath);
+            }
+            Console.WriteLine(e);
+            Console.ForegroundColor = ConsoleColor.Green;
+        }
     }
 }

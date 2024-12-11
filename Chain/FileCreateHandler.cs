@@ -1,9 +1,14 @@
 using GoldenCudgel.Entities;
+using GoldenCudgel.Exceptions;
 using TagLib;
 using File = TagLib.File;
 
 namespace GoldenCudgel.Chain;
 
+/**
+ * mp4格式转换异常:TagLibSharp在处理 mp4 格式的时候会强制检查 box header声明的 box size和实际box size大小是否匹配
+ * 如果不匹配会抛出异常，并且将file writable置为false,导致无法写入tag信息
+ */
 public class FileCreateHandler : AbstractHandler
 {
     public override void Handle(FileInfo file, FileStream fs, NcmObject ncmObject)
@@ -18,6 +23,12 @@ public class FileCreateHandler : AbstractHandler
         stream.Write(ncmObject.MusicDataArray.ToArray());
         stream.Close();
 
+        //如果是mp4格式，不做tag信息处理
+        if (ncmObject.NeteaseCopyrightData.Format == "mp4")
+        {
+            return;
+        }
+
         try
         {
             var musicFile = File.Create(destPath);
@@ -31,10 +42,7 @@ public class FileCreateHandler : AbstractHandler
         }
         catch (Exception e)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine(destPath);
-            Console.WriteLine(e);
-            Console.ForegroundColor = ConsoleColor.Green;
+            throw new FileCreateException() { filePath = destPath };
         }
 
         base.Handle(file, fs, ncmObject);

@@ -81,7 +81,7 @@ public class Program
             using var fs = new FileStream(fileInfo.FullName, FileMode.Open, FileAccess.Read);
             headerHandler.Handle(fileInfo, fs, ncmObject);
             fs.Close();
-            Console.WriteLine(ncmObject.ToString());
+            //Console.WriteLine(ncmObject.ToString());
         }
     }
 
